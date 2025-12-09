@@ -39,66 +39,7 @@ metrics_bp = Blueprint("metrics", __name__)
 
 #     return jsonify(data)
 
-##=======================================
-# from sqlalchemy import text
-# from flask import jsonify
 
-# @metrics_bp.get("/summary/<int:artist_id>")
-# def summary_metrics(artist_id):
-#     codes = ["followers", "views", "streams", "tickets"]
-
-#     sql = text("""
-#         ;WITH MetricTypesFiltered AS (
-#             SELECT [MetricTypeId], [Code]
-#             FROM [MetricTypes]
-#             WHERE [Code] IN (:c1, :c2, :c3, :c4)
-#         ),
-#         LatestPerType AS (
-#             SELECT 
-#                 am.[MetricTypeId],
-#                 MAX(am.[MetricDate]) AS [MaxDate]
-#             FROM 
-#                 [ArtistMetrics] AS am
-#                 INNER JOIN [MetricTypesFiltered] AS mt 
-#                     ON am.[MetricTypeId] = mt.[MetricTypeId]
-#             WHERE 
-#                 am.[ArtistId] = :artist_id
-#             GROUP BY 
-#                 am.[MetricTypeId]
-#         )
-#         SELECT 
-#             am.[MetricTypeId],
-#             mt.[Code],
-#             am.[Value]
-#         FROM 
-#             [ArtistMetrics] AS am
-#             INNER JOIN [LatestPerType] AS l
-#                 ON am.[MetricTypeId] = l.[MetricTypeId]
-#                AND am.[MetricDate] = l.[MaxDate]
-#             INNER JOIN [MetricTypesFiltered] AS mt
-#                 ON mt.[MetricTypeId] = am.[MetricTypeId];
-#     """)
-
-#     result = db.session.execute(
-#         sql,
-#         {
-#             "artist_id": artist_id,
-#             "c1": codes[0],
-#             "c2": codes[1],
-#             "c3": codes[2],
-#             "c4": codes[3],
-#         },
-#     )
-
-#     rows = result.mappings().all()  # each row is a dict-like object
-
-#     data = {}
-#     for row in rows:
-#         code = row["Code"]
-#         value = float(row["Value"])
-#         data[code] = value
-
-#     return jsonify(data)
 
 from flask import jsonify, current_app
 from sqlalchemy import text
@@ -124,18 +65,6 @@ def summary_metrics(artist_id):
         # Log the real error so you can see what SQL / driver is complaining about
         current_app.logger.exception("Error in summary_metrics")
         return jsonify({"error": "Internal Server Error"}), 500
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ##========================================11111111111111111111111111111111111111111
