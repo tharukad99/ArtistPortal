@@ -1,7 +1,7 @@
-# artistportal/models.py
 from . import db
 from datetime import datetime
 
+# Define the models
 class Artist(db.Model):
     __tablename__ = "Artists"
 
@@ -15,12 +15,13 @@ class Artist(db.Model):
     WebsiteUrl = db.Column(db.String(500))
     DateCreated = db.Column(db.DateTime, default=datetime.utcnow)
     IsActive = db.Column(db.Boolean, default=True)
+    SourcesCount = db.Column(db.Integer)
 
     sources = db.relationship("ArtistSource", backref="artist", lazy=True)
     activities = db.relationship("Activity", backref="artist", lazy=True)
     metrics = db.relationship("ArtistMetric", backref="artist", lazy=True)
 
-
+# Define other models
 class SourceType(db.Model):
     __tablename__ = "SourceTypes"
 

@@ -10,13 +10,32 @@
 
     <!-- Chart.js CDN for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome for icons -->
+
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+        <!-- <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        /> -->
+
+
 </head>
 <body>
 <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
+
         <div class="sidebar-header">
-            <div class="logo">ARTISIGHTS</div>
+            <a href="{{ url_for('artist_list_page') }}" class="logo-link">
+                <img 
+                    src="{{ url_for('static', filename='img/logo.png') }}" 
+                    alt="Artisights Logo" 
+                    class="logo-image"
+                >
+            </a>
         </div>
 
         <div class="artist-profile">
@@ -24,24 +43,31 @@
             <div id="sidebar-artist-name" class="artist-name">Artist Name</div>
         </div>
 
-       <nav class="nav">
-        {% if artist_id %}
-        <!-- When we're on an artist dashboard/activities page -->
-        <a href="{{ url_for('home_page', artist_id=artist_id) }}"
-           class="nav-item {% if '/artist/' in request.path and '/activities' not in request.path %}active{% endif %}">
-            <span>Home</span>
-        </a>
-        <a href="{{ url_for('activities_page', artist_id=artist_id) }}"
-           class="nav-item {% if '/activities' in request.path %}active{% endif %}">
-            <span>Activities</span>
-        </a>
-        {% else %}
-        <!-- When we're on the artist list page -->
-        <a href="{{ url_for('artist_list_page') }}" class="nav-item active">
-            <span>Artists</span>
-        </a>
-        {% endif %}
-       </nav>
+        <nav class="nav">
+            {% if artist_id %}
+                <!-- Artist pages -->
+                <a href="{{ url_for('home_page', artist_id=artist_id) }}"
+                   class="nav-item {% if '/artist/' in request.path and '/activities' not in request.path and '/social' not in request.path %}active{% endif %}">
+                    <span>Home</span>
+                </a>
+
+                <a href="{{ url_for('social_media_page', artist_id=artist_id) }}"
+                   class="nav-item {% if '/social' in request.path %}active{% endif %}">
+                    <span>Social Media</span>
+                </a>
+
+                <a href="{{ url_for('activities_page', artist_id=artist_id) }}"
+                   class="nav-item {% if '/activities' in request.path %}active{% endif %}">
+                    <span>Activities</span>
+                </a>
+                
+            {% else %}
+                <!-- Artist list page -->
+                <a href="{{ url_for('artist_list_page') }}" class="nav-item active">
+                    <span>Artists</span>
+                </a>
+            {% endif %}
+        </nav>
 
     </aside>
 

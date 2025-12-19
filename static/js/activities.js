@@ -1,26 +1,36 @@
-// static/js/activities.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const artistId = document.getElementById("artist-id").value;
     loadArtistSidebar(artistId);
     loadActivitiesTimeline(artistId);
 });
 
-// Reuse same sidebar loader as dashboard
+// Re-use sidebar loader (same pattern as dashboard.js)
 function loadArtistSidebar(artistId) {
     fetch(`/api/artists/${artistId}`)
         .then(r => r.json())
         .then(artist => {
-            document.getElementById("sidebar-artist-name").textContent = artist.stageName;
-            if (artist.profileImageUrl) {
-                document.getElementById("sidebar-artist-image").src = artist.profileImageUrl;
-            } else {
-                document.getElementById("sidebar-artist-image").src =
-                    "https://via.placeholder.com/80x80?text=Artist";
+            const nameEl = document.getElementById("sidebar-artist-name");
+            const imgEl = document.getElementById("sidebar-artist-image");
+
+            if (nameEl) nameEl.textContent = artist.stageName;
+            if (imgEl) {
+                imgEl.src = artist.profileImageUrl ||
+                    "https://via.placeholder.com/80x80?text=A";
             }
         })
         .catch(err => console.error("Error loading artist:", err));
 }
+
+// Map activity type -> icon (you can change these to FontAwesome if you want)
+const iconMap = {
+    "Concert": "🎵",
+    "Video Uploaded": "▶️",
+    "Google Campaign": "🅶",
+    "New Album": "💿",
+    "Podcast Release": "🎙️",
+    "Spotify Release": "🎧"
+};
+
 
 function loadActivitiesTimeline(artistId) {
     fetch(`/api/activities/artist/${artistId}`)
@@ -29,47 +39,110 @@ function loadActivitiesTimeline(artistId) {
             const container = document.getElementById("activities-timeline");
             container.innerHTML = "";
 
-            // group by date label
-            items.sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (!items || items.length === 0) {
+                container.textContent = "No activities yet.";
+                return;
+            }
 
-            items.forEach(act => {
-                const item = document.createElement("div");
-                item.className = "timeline-item";
-
-                const dot = document.createElement("div");
-                dot.className = "timeline-dot";
-
-                const dateEl = document.createElement("div");
-                dateEl.className = "timeline-date";
-                dateEl.textContent = formatPrettyDate(act.date);
-
-                const titleEl = document.createElement("div");
-                titleEl.className = "timeline-title";
-                titleEl.textContent = act.title;
-
-                const metaEl = document.createElement("div");
-                metaEl.className = "timeline-meta";
-                let meta = "";
-                if (act.type) meta += act.type;
-                if (act.location) meta += meta ? " · " + act.location : act.location;
-                metaEl.textContent = meta;
-
-                item.appendChild(dot);
-                item.appendChild(dateEl);
-                item.appendChild(titleEl);
-                item.appendChild(metaEl);
-
-                container.appendChild(item);
+            // Sort by date ascending
+            items.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date);
             });
+
+            // Group by date (YYYY-MM-DD)
+            const groups = {};
+            items.forEach(act => {
+                const key = act.date;
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(act);
+            });
+
+            Object.keys(groups)
+                .sort((a, b) => new Date(b) - new Date(a))
+                .forEach(dateKey => {
+                    const groupDiv = document.createElement("div");
+                    groupDiv.className = "timeline-date-group";
+
+                    // Date label
+                    const dateLabel = document.createElement("div");
+                    dateLabel.className = "timeline-date-label";
+                    dateLabel.textContent = formatNiceDate(dateKey);
+                    groupDiv.appendChild(dateLabel);
+
+                    groups[dateKey].forEach(act => {
+                        const row = document.createElement("div");
+                        row.className = "timeline-row";
+
+                        // Marker column
+                        const marker = document.createElement("div");
+                        marker.className = "timeline-marker";
+
+                        const dot = document.createElement("div");
+                        dot.className = "timeline-dot";
+                        marker.appendChild(dot);
+
+                        // Content row (icon + text + optional link)
+                        const content = document.createElement("div");
+                        content.className = "timeline-entry";
+
+                        // Left icon
+                        const iconSpan = document.createElement("span");
+                        iconSpan.className = "timeline-icon";
+                        iconSpan.textContent = iconMap[act.type] || "•";
+
+                        // Title text
+                        const textSpan = document.createElement("span");
+                        textSpan.className = "timeline-text";
+                        textSpan.textContent = act.title;
+
+                        content.appendChild(iconSpan);
+                        content.appendChild(textSpan);
+
+                        // ✅ Optional reference link icon on the right
+                        if (act.externalUrl && act.externalUrl.trim() !== "") {
+                            const link = document.createElement("a");
+                            link.className = "timeline-link";
+                            link.href = act.externalUrl;
+                            link.target = "_blank";
+                            link.rel = "noopener noreferrer";
+                            link.title = "Open link";
+
+                            const icon = document.createElement("i");
+                            icon.className = "fa-solid fa-arrow-up-right-from-square";
+
+                            link.appendChild(icon);
+                            content.appendChild(link);
+                        }
+
+                        row.appendChild(marker);
+                        row.appendChild(content);
+                        groupDiv.appendChild(row);
+                    });
+
+                    container.appendChild(groupDiv);
+                });
         })
         .catch(err => console.error("Error loading activities:", err));
 }
 
-function formatPrettyDate(dateStr) {
+// Format date nicely based on whether it's the current year
+function formatNiceDate(dateStr) {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    });
+    const now = new Date();
+    const sameYear = d.getFullYear() === now.getFullYear();
+
+    if (sameYear) {
+        // "February 15"
+        return d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long"
+        });
+    } else {
+        // "20 June 2024"
+        return d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+    }
 }

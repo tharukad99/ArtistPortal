@@ -1,54 +1,67 @@
-# artistportal/routes/artists.py
 from flask import Blueprint, jsonify
 from ..models import Artist
+from ..models import db
+from sqlalchemy import text
 
 artists_bp = Blueprint("artists", __name__)
 
+# Get list of active artists
 @artists_bp.get("/")
 def list_artists():
-    artists = Artist.query.filter_by(IsActive=True).all()
+    sql = text("EXEC dbo.ListActiveArtists")
+    rows = db.session.execute(sql).mappings().all()
+
     return jsonify([
         {
-            "id": a.ArtistId,
-            "stageName": a.StageName,
-            "profileImageUrl": a.ProfileImageUrl,
-        } for a in artists
+            "id": r["ArtistId"],
+            "stageName": r["StageName"],
+            "profileImageUrl": r["ProfileImageUrl"]
+        }
+        for r in rows
     ])
 
-
-from flask import Blueprint, jsonify, abort
-from ..models import Artist, ArtistSource
-
+# Get details of a specific artist
 @artists_bp.get("/<int:artist_id>")
 def get_artist(artist_id):
-    artist = Artist.query.get_or_404(artist_id)
+    sql = text("EXEC dbo.sp_GetArtistById @ArtistId=:artist_id")
+    row = db.session.execute(sql, {"artist_id": artist_id}).mappings().first()
+
+    if not row:
+        return jsonify({"error": "Artist not found"}), 404
 
     return jsonify({
-        "id": artist.ArtistId,
-        "stageName": artist.StageName,
-        "fullName": artist.FullName,
-        "bio": artist.Bio,
-        "profileImageUrl": artist.ProfileImageUrl,
-        "country": artist.Country,
-        "primaryGenre": artist.PrimaryGenre,
-        "websiteUrl": artist.WebsiteUrl
+        "id": row["ArtistId"],
+        "stageName": row["StageName"],
+        "fullName": row["FullName"],
+        "bio": row["Bio"],
+        "profileImageUrl": row["ProfileImageUrl"],
+        "country": row["Country"],
+        "primaryGenre": row["PrimaryGenre"],
+        "websiteUrl": row["WebsiteUrl"],
+        "sourcesCount": int(row["SourcesCount"] or 0)
     })
 
+# Get photos of a specific artist
+@artists_bp.get("/<int:artist_id>/photos")
+def get_artist_photos(artist_id):
+    sql = """
+        SELECT
+            PhotoUrl,
+            Caption
+        FROM ArtistPhotos
+        WHERE ArtistId = :artist_id
+        ORDER BY SortOrder ASC, DateCreated DESC;
+    """
+    rows = db.session.execute(
+        text(sql),
+        {"artist_id": artist_id}
+    ).mappings().all()
 
-@artists_bp.get("/<int:artist_id>/sources")
-def get_artist_sources(artist_id):
-    Artist.query.get_or_404(artist_id)
+    result = []
+    for r in rows:
+        result.append({
+            "url": r["PhotoUrl"],
+            "caption": r["Caption"]
+        })
 
-    sources = ArtistSource.query.filter_by(ArtistId=artist_id).all()
-    return jsonify([
-        {
-            "id": s.ArtistSourceId,
-            "type": s.source_type.Name,
-            "typeCode": s.source_type.Code,
-            "url": s.Url,
-            "handle": s.Handle,
-            "isPrimary": s.IsPrimary
-        } for s in sources
-    ])
-
-
+    return jsonify(result)

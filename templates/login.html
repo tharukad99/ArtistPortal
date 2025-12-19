@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - ARTISIGHTS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body style="background:#f3f4f6; display:flex; align-items:center; justify-content:center; min-height:100vh;">
+
+  <div class="card" style="max-width:420px; width:100%;">
+    <div class="card-title" style="font-size:20px;">Login</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin-bottom:12px;">
+          {% for category, msg in messages %}
+            <div style="padding:10px; border-radius:10px; background:#fff7ed; border:1px solid #fed7aa; margin-bottom:8px;">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login_post') }}">
+      <div style="margin-bottom:12px;">
+        <label>Username</label>
+        <input name="username" class="search-input" style="width:100%;" />
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Password</label>
+        <input type="password" name="password" class="search-input" style="width:100%;" />
+      </div>
+
+      <button type="submit" class="bio-link" style="width:100%; justify-content:center;">
+        Sign in
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>

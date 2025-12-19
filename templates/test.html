@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block page_title %}Social Media{% endblock %}
+
+{% block content %}
+<input type="hidden" id="artist-id" value="{{ artist_id }}">
+
+<!-- Summary cards -->
+<i class="fa-brands fa-spotify"></i>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/social_media.js') }}"></script>
+{% endblock %}

@@ -287,3 +287,351 @@ body {
     font-size: 15px;
     font-weight: 600;
 }
+
+.artist-card-genre {
+    font-size: 13px;
+    color: #6b7280;
+}
+/* Activities timeline */
+
+.timeline {
+    position: relative;
+    padding-left: 48px;
+}
+
+/* Vertical line */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e5e7eb;
+}
+
+.timeline-date-group {
+    margin-bottom: 18px;
+}
+
+.timeline-date-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+/* Row = dot + content */
+.timeline-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Space for dot on the vertical line */
+.timeline-marker {
+    position: relative;
+    width: 44px; /* enough to sit on the line */
+    height: 18px;
+}
+
+/* The dot itself */
+.timeline-dot {
+    position: absolute;
+    left: 16px;   /* align with ::before line (22px line - radius) */
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: #3b82f6;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px #e5e7eb;
+}
+
+/* icon + text */
+.timeline-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+}
+
+.timeline-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.timeline-text {
+    font-size: 15px;
+    color: #111827;
+}
+
+
+
+/* Back Button Style */
+.back-btn {
+    background: #e5e7eb;
+    color: #111827;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    margin-right: 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    background: #d1d5db;
+}
+
+
+/* Social Links Page Styles */
+.social-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: 0.15s;
+}
+
+.social-link:hover {
+    background: #f9fafb;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.social-icon {
+    font-size: 22px;
+    width: 28px;
+    text-align: center;
+}
+
+.social-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.social-url {
+    font-size: 12px;
+    color: #6b7280;
+    word-break: break-all;
+}
+
+.social-icon {
+    font-size: 22px;
+    width: 32px;
+    text-align: center;
+    color: #111827;
+}
+
+/* Platform colors (optional but recommended) */
+.social-link .fa-facebook-f { color: #1877f2; }
+.social-link .fa-spotify { color: #1db954; }
+.social-link .fa-instagram { color: #e4405f; }
+.social-link .fa-youtube { color: #ff0000; }
+.social-link .fa-x-twitter { color: #111827; }
+.social-link .fa-apple { color: #000; }
+.social-link .fa-bandcamp { color: #629aa9; }
+
+
+/* Page container spacing */
+.page-content {
+  padding: 20px;
+}
+
+/* Each card should have clear separation */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 18px;          /* IMPORTANT: space between cards */
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+/* Card title separation */
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;          /* IMPORTANT */
+  color: #111827;
+}
+
+/* Improve text clarity */
+.artist-bio-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.artist-bio-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.artist-bio-text {
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.7;
+  margin-bottom: 14px;
+  max-width: 900px;
+}
+
+/* Make links look clean */
+.artist-bio-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.bio-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  text-decoration: none;
+  font-size: 13px;
+  color: #111827;
+  transition: 0.15s ease;
+}
+
+.bio-link:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.bio-meta {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Latest album box style */
+.album-box {
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  line-height: 1.6;
+}
+
+/* Recent activities list spacing */
+#recent-activities {
+  margin-top: 6px;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 14px;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item div:first-child {
+  font-weight: 600;
+  color: #111827;
+}
+
+.activity-item div:last-child {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Gallery grid: nice spacing & responsive */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  display: block;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  transition: 0.15s ease;
+}
+
+.gallery-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Friendly empty state */
+.empty {
+  font-size: 14px;
+  color: #6b7280;
+  padding: 10px 0;
+}
+
+
+/* Timeline link styles */
+.timeline-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+  color: #475569;
+  background: #fff;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.timeline-link:hover {
+  color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+}
+
+
+/* Logo styles */
+.logo-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-image {
+    max-width: 140px;
+    height: auto;
+    cursor: pointer;
+}

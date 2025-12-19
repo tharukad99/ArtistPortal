@@ -1,26 +1,30 @@
-# artistportal/routes/activities.py
 from flask import Blueprint, jsonify
 from ..models import Activity
+from flask import jsonify
+from sqlalchemy import text
+from ..models import db
 
 activities_bp = Blueprint("activities", __name__)
 
+# Get activities for a specific artist
 @activities_bp.get("/artist/<int:artist_id>")
 def list_activities(artist_id):
-    activities = (
-        Activity.query
-        .filter_by(ArtistId=artist_id)
-        .order_by(Activity.ActivityDate.desc())
-        .all()
+    result = db.session.execute(
+        text("EXEC dbo.usp_ListActivitiesByArtist :artist_id"),
+        {"artist_id": artist_id}
     )
+
+    rows = result.fetchall()
 
     return jsonify([
         {
-            "id": a.ActivityId,
-            "date": a.ActivityDate.strftime("%Y-%m-%d"),
-            "title": a.Title,
-            "type": a.activity_type.Name,
-            "icon": a.activity_type.IconName,
-            "location": a.Location,
-            "externalUrl": a.ExternalUrl
-        } for a in activities
+            "id": row.ActivityId,
+            "date": row.ActivityDate.strftime("%Y-%m-%d") if row.ActivityDate else None,
+            "title": row.Title,
+            "type": row.ActivityTypeName,
+            "icon": row.IconName,
+            "location": row.Location,
+            "externalUrl": row.ExternalUrl
+        }
+        for row in rows
     ])

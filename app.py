@@ -19,5 +19,11 @@ def home_page(artist_id):
 def activities_page(artist_id):
     return render_template("activities.html", artist_id=artist_id)
 
+# Social Media details page for that artist
+@app.route("/artist/<int:artist_id>/social")
+def social_media_page(artist_id):
+    return render_template("social_media.html", artist_id=artist_id)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

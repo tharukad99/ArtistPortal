@@ -1,11 +1,9 @@
-// static/js/artists_list.js
-
 document.addEventListener("DOMContentLoaded", () => {
     loadArtistList();
 });
 
+// Load and display the list of artists
 function loadArtistList() {
-    // Uses your existing API: /api/artists/
     fetch("/api/artists/")
         .then(r => r.json())
         .then(artists => {
