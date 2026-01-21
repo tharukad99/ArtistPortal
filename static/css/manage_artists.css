@@ -1,0 +1,274 @@
+/* Header */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search {
+  width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #e6e8ee;
+  border-radius: 999px;
+  outline: none;
+}
+
+/* Card */
+.card {
+  margin: 0 18px 18px 18px;
+  background: #fff;
+  border: 1px solid #eef0f5;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 6px 12px 6px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Table */
+.table-wrap {
+  border: 1px solid #eef0f5;
+  border-radius: 14px;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f3f7;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.table thead th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
+  background: #fafbff;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.name-cell .name {
+  font-weight: 800;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.pill-green { background: #e8fff2; color: #137a3a; }
+.pill-gray  { background: #f2f4f7; color: #5b6472; }
+
+/* Buttons */
+.btn-primary {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #111827;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  border: 1px solid #e6e8ee;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fff;
+  color: #111827;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-small {
+  border: 1px solid #e6e8ee;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+.icon-btn:hover { background: #f2f4f7; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
+}
+.modal-backdrop[hidden] { display: none; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 60;
+}
+.modal[hidden] { display: none; }
+
+.modal-content {
+  width: min(900px, calc(100% - 24px));
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef0f5;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+
+.modal-header, .modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f3f7;
+}
+.modal-footer {
+  border-top: 1px solid #f1f3f7;
+  border-bottom: none;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.modal-body {
+  padding: 14px 16px;
+  display: grid;
+  gap: 12px;
+}
+
+/* .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+} */
+
+.span-2 { grid-column: span 2; }
+
+.field span {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.field input, .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e6e8ee;
+  border-radius: 12px;
+  outline: none;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.form-error {
+  color: #b42318;
+  font-size: 13px;
+  min-height: 18px;
+}
+
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;  
+  gap:30px;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .span-2 { grid-column: span 1; }
+  .search { width: 200px; }
+}
+
+
+.nav1 {
+    margin-top: 16px;
+}
+
+.nav1-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: #e5e7eb;
+    text-decoration: none;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.nav1-link:hover {
+    background: #1f2937;
+}
+
+.nav1-link.active {
+    background: #374151;
+}

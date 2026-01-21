@@ -12,14 +12,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
 
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+        <!-- <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        /> -->
+
+
+</head>
 <body>
 <div class="layout">
-
     <!-- Sidebar -->
     <aside class="sidebar">
 
@@ -32,6 +37,7 @@
                 >
             </a>
         </div>
+
 
         <div class="artist-profile">
             <img id="sidebar-artist-image" src="" alt="Artist" class="artist-avatar">
@@ -55,34 +61,12 @@
                    class="nav-item {% if '/activities' in request.path %}active{% endif %}">
                     <span>Activities</span>
                 </a>
-
-
-
-                <a href="/admin/manage-artists"
-                    class="nav-item">
-                        <span>Manage Artists</span>
-                </a>
-
-
-                <!-- ADMIN ONLY -->
-                {% if current_user.is_authenticated and current_user.is_admin() %}
-                <a href="/admin/create-artist" class="nav-item admin-item">
-                    <span>Create Artist</span>
-                </a>
-                {% endif %}
-
+                
             {% else %}
                 <!-- Artist list page -->
                 <a href="{{ url_for('artist_list_page') }}" class="nav-item active">
                     <span>Artists</span>
                 </a>
-
-                <!-- ADMIN ONLY -->
-                {% if current_user.is_authenticated and current_user.is_admin() %}
-                <a href="/admin/create-artist" class="nav-item admin-item">
-                    <span>Create Artist</span>
-                </a>
-                {% endif %}
             {% endif %}
         </nav>
 
@@ -92,21 +76,8 @@
     <main class="main">
         <header class="topbar">
             <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
-
             <div class="topbar-right">
-                <!-- <input type="text" placeholder="Search" class="search-input"> -->
-
-                <!-- Auth section -->
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.logout') }}" class="topbar-link">
-                        Logout
-                    </a>
-                {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="topbar-link">
-                        Admin Login
-                    </a>
-                {% endif %}
-
+                <input type="text" placeholder="Search" class="search-input">
                 <div class="avatar-placeholder"></div>
             </div>
         </header>
@@ -115,12 +86,8 @@
             {% block content %}{% endblock %}
         </section>
     </main>
-
 </div>
 
 {% block scripts %}{% endblock %}
 </body>
 </html>
-
-
-

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Manage Artists - ArtiSights</title>
+
+  <!-- Your existing base css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <!-- Page css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_artists.css') }}">
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar (simple) -->
+
+
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ARTISIGHTS</div>
+    </div>
+
+    <nav class="nav1">
+      <a class="nav1-link" href="/artistslist">Artists List</a>
+      <a class="nav1-link active" href="/admin/manage-artists">Manage Artists</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Manage Artists</h1>
+
+      <div class="page-actions">
+        <input id="searchBox" class="search" type="text" placeholder="Search by stage name..." />
+        <button id="btnAdd" type="button" class="btn-primary">+ Add Artist</button>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="card-top">
+        <h3 class="card-title">Artists</h3>
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="artistsTable">
+          <thead>
+            <tr>
+              <th style="width:70px;">ID</th>
+              <th>Stage Name</th>
+              <th>Country</th>
+              <th>Genre</th>
+              <th style="width:110px;">Active</th>
+              <th style="width:180px;">Created</th>
+              <th style="width:120px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="artistsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Backdrop (hidden by default) -->
+<div id="modalBackdrop" class="modal-backdrop" hidden></div>
+
+<!-- Modal (hidden by default) -->
+<div id="artistModal" class="modal" hidden>
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <div class="modal-header">
+      <h2 id="modalTitle" class="modal-title">Add Artist</h2>
+
+      <!-- IMPORTANT: type="button" -->
+      <button type="button" class="icon-btn" id="btnCloseModal" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="artistId" value="0" />
+
+      <div class="form-grid">
+        <label class="field">
+          <span>Stage Name *</span>
+          <input id="stageName" type="text" placeholder="Anna Russell-Martin" />
+        </label>
+
+        <label class="field">
+          <span>Full Name</span>
+          <input id="fullName" type="text" placeholder="Anna Russell-Martin" />
+        </label>
+
+        <label class="field">
+          <span>Country</span>
+          <input id="country" type="text" placeholder="UK" />
+        </label>
+
+        <label class="field">
+          <span>Primary Genre</span>
+          <input id="primaryGenre" type="text" placeholder="Acting / Theatre" />
+        </label>
+
+        <label class="field span-2">
+          <span>Website URL</span>
+          <input id="websiteUrl" type="url" placeholder="https://..." />
+        </label>
+
+        <label class="field span-2">
+          <span>Profile Image URL</span>
+          <input id="profileImageUrl" type="url" placeholder="https://.../photo.jpg" />
+        </label>
+
+        <label class="field span-2">
+          <span>Bio</span>
+          <textarea id="bio" rows="5" placeholder="Short bio..."></textarea>
+        </label>
+      </div>
+
+      <label class="checkbox">
+        <input id="isActive" type="checkbox" checked />
+        <span>Active</span>
+      </label>
+
+      <div id="formError" class="form-error"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="btnCancel">Cancel</button>
+      <button type="button" class="btn-primary" id="btnSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/manage_artists.js') }}"></script>
+</body>
+</html>
