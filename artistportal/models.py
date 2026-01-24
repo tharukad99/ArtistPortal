@@ -119,12 +119,14 @@ class User(db.Model, UserMixin):
     UserId = db.Column(db.Integer, primary_key=True)
     Username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     PasswordHash = db.Column(db.String(255), nullable=False)
-    # DisplayName = db.Column(db.String(150), nullable=False)
+    #DisplayName = db.Column(db.String(150), nullable=False)
     # Email = db.Column(db.String(150), unique=True, nullable=False)
     # IsAdmin = db.Column(db.Boolean, default=False)
     Role = db.Column(db.String(20), nullable=False, default="admin")  # "admin" or "guest"
     IsActive = db.Column(db.Boolean, default=True)
     DateCreated = db.Column(db.DateTime, default=datetime.utcnow)
+
+    #ArtistId = db.Column(db.Integer, nullable=True)   # ✅ NEW
 
     # Flask-Login uses .get_id() from UserMixin.
     # But because your PK is UserId, we map it:
@@ -247,29 +249,31 @@ class ArtistMetric(db.Model):
 
 
 
-# class User1(db.Model, UserMixin):
-#     __tablename__ = "Users1"
+class User1(db.Model, UserMixin):
+    __tablename__ = "Users1"
 
-#     UserId = db.Column(db.Integer, primary_key=True)
-#     Username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-#     PasswordHash = db.Column(db.String(255), nullable=False)
-#     # DisplayName = db.Column(db.String(150), nullable=False)
-#     # Email = db.Column(db.String(150), unique=True, nullable=False)
-#     IsAdmin = db.Column(db.Boolean, default=False)
-#     Role = db.Column(db.String(20), nullable=False, default="admin")  # "admin" or "guest"
-#     IsActive = db.Column(db.Boolean, default=True)
-#     DateCreated = db.Column(db.DateTime, default=datetime.utcnow)
+    UserId = db.Column(db.Integer, primary_key=True)
+    Username = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    PasswordHash = db.Column(db.String(255), nullable=False)
+    DisplayName = db.Column(db.String(150), nullable=False)
+    # Email = db.Column(db.String(150), unique=True, nullable=False)
+    #IsAdmin = db.Column(db.Boolean, default=False)
+    Role = db.Column(db.String(20), nullable=False, default="admin")  # "admin" or "guest"
+    IsActive = db.Column(db.Boolean, default=True)
+    DateCreated = db.Column(db.DateTime, default=datetime.utcnow)
 
-#     # Flask-Login uses .get_id() from UserMixin.
-#     # But because your PK is UserId, we map it:
-#     def get_id(self):
-#         return str(self.UserId)
+    ArtistId = db.Column(db.Integer, nullable=True)
 
-#     def set_password(self, password: str) -> None:
-#         self.PasswordHash = generate_password_hash(password)
+    # Flask-Login uses .get_id() from UserMixin.
+    # But because your PK is UserId, we map it:
+    def get_id(self):
+        return str(self.UserId)
 
-#     def check_password(self, password: str) -> bool:
-#         return check_password_hash(self.PasswordHash, password)
+    def set_password(self, password: str) -> None:
+        self.PasswordHash = generate_password_hash(password)
 
-#     def is_admin(self) -> bool:
-#         return self.Role.lower() == "admin"
+    def check_password(self, password: str) -> bool:
+        return check_password_hash(self.PasswordHash, password)
+
+    def is_admin(self) -> bool:
+        return self.Role.lower() == "admin"

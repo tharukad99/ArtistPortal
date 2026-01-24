@@ -34,7 +34,7 @@
 
 
 # artistportal/__init__.py
-from flask import Flask
+from flask import Flask, app
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_login import LoginManager
@@ -82,6 +82,10 @@ def create_app(config_object="config.Config"):
     # ---- Register Auth blueprint (NEW) ----
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp)
+
+    # ---- Register Artist Profile blueprint (NEW) ----
+    from .routes.artist_profile import artist_profile_bp
+    app.register_blueprint(artist_profile_bp)
 
     # Create tables (simple dev approach)
     # In production, use migrations (Flask-Migrate/Alembic).
