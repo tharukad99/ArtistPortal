@@ -70,7 +70,6 @@ function loadSocialLinks(artistId) {
         .catch(err => console.error("Social links load error:", err));
 }
 
-
 /* ---------- Charts ---------- */
 let growthChart = null;
 let engagementChart = null;

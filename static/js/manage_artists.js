@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancel = document.getElementById("btnCancel");
   const btnSave = document.getElementById("btnSave");
 
+  // ✅ NEW: Delete button inside modal
+  const btnDeleteInModal = document.getElementById("btnDeleteInModal");
+
   const artistId = document.getElementById("artistId");
   const stageName = document.getElementById("stageName");
   const fullName = document.getElementById("fullName");
@@ -30,7 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let allArtists = [];
 
   // ====== UTILS ======
-  function setStatus(msg) { statusEl.textContent = msg || ""; }
+  function setStatus(msg) {
+    statusEl.textContent = msg || "";
+  }
 
   function escapeHtml(str) {
     return String(str ?? "")
@@ -43,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== MODAL CONTROL ======
   function openModal(mode, artist = null) {
-    console.log( "dd",artist);
     formError.textContent = "";
 
     if (mode === "add") {
@@ -57,12 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
       profileImageUrl.value = "";
       bio.value = "";
       isActive.checked = true;
+
+      // ✅ hide delete in add mode
+      btnDeleteInModal.hidden = true;
+      btnDeleteInModal.disabled = false;
+      btnDeleteInModal.textContent = "Delete";
     } else {
       modalTitle.textContent = "Edit Artist";
-      // id.value = String(artist.id);
       artistId.value = String(artist.id);
 
-      // These keys MUST match your API response
       stageName.value = artist.stageName || "";
       fullName.value = artist.fullName || "";
       country.value = artist.country || "";
@@ -70,7 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
       websiteUrl.value = artist.websiteUrl || "";
       profileImageUrl.value = artist.profileImageUrl || "";
       bio.value = artist.bio || "";
-      isActive.checked = !!artist.IsActive;
+      isActive.checked = !!artist.isActive;
+
+      // ✅ show delete in edit mode
+      btnDeleteInModal.hidden = false;
+      btnDeleteInModal.disabled = false;
+      btnDeleteInModal.textContent = "Delete";
+      btnDeleteInModal.dataset.id = String(artist.id);
+      btnDeleteInModal.dataset.name = artist.stageName || "";
     }
 
     backdrop.hidden = false;
@@ -84,11 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "";
   }
 
-  // Force hidden on load (safety)
   modal.hidden = true;
   backdrop.hidden = true;
 
-  // ====== TABLE ======
+  // ====== TABLE RENDER ======
   function renderTable(items) {
     tbody.innerHTML = "";
 
@@ -100,26 +113,35 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const a of items) {
       const created = a.dateCreated ? String(a.dateCreated).replace("T", " ").slice(0, 19) : "-";
 
-      // console.log(a);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${a.id}</td>
+
         <td>
           <div class="name-cell">
-            <div class="name">${escapeHtml(a.stageName || "")}</div>
+            <a href="/edit-home/${a.id}" class="artist-link">
+              ${escapeHtml(a.stageName || "")}
+            </a>
             <div class="muted">${escapeHtml(a.fullName || "")}</div>
           </div>
         </td>
+
         <td>${escapeHtml(a.country || "-")}</td>
         <td>${escapeHtml(a.primaryGenre || "-")}</td>
+
         <td>
           <span class="pill ${a.isActive ? "pill-green" : "pill-gray"}">
             ${a.isActive ? "Active" : "Inactive"}
           </span>
         </td>
+
         <td>${escapeHtml(created)}</td>
+
         <td>
-          <button type="button" class="btn-small" data-action="edit" data-id="${a.id}">Edit</button>
+          <div class="row-actions">
+            <button type="button" class="btn-small" data-action="edit" data-id="${a.id}">Edit</button>
+            
+          </div>
         </td>
       `;
       tbody.appendChild(tr);
@@ -128,29 +150,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function filterAndRender() {
     const q = (searchBox.value || "").trim().toLowerCase();
-    const filtered = !q ? allArtists : allArtists.filter(a => (a.stageName || "").toLowerCase().includes(q));
+    const filtered = !q
+      ? allArtists
+      : allArtists.filter(a => (a.stageName || "").toLowerCase().includes(q));
     renderTable(filtered);
   }
 
-  // ======Get all artists data API ======
+  // ====== API LOAD ======
   async function loadArtists() {
     setStatus("Loading...");
-    const res = await fetch("/api/artists/AllArtistsList?only_active=0");
+    const res = await fetch("/api/artists/AllArtistsList?only_active=0", { credentials: "include" });
 
     if (!res.ok) {
       setStatus("Failed to load artists");
       return;
     }
-    
 
     allArtists = await res.json();
-
     setStatus("");
     filterAndRender();
   }
 
-
-  //save artist
+  // ====== SAVE ======
   async function saveArtist() {
     formError.textContent = "";
 
@@ -187,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok) {
         formError.textContent = data.message || "Save failed.";
         return;
@@ -201,19 +221,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ====== DELETE (used both table delete + modal delete) ======
+  async function deleteArtist(id, stageNameText) {
+    const ok = confirm(`Permanently DELETE "${stageNameText}"?\n\nThis cannot be undone.`);
+    if (!ok) return false;
+
+    setStatus("Deleting...");
+
+    const res = await fetch(`/api/artists/delete/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      setStatus(data.message || "Delete failed.");
+      return false;
+    }
+
+    setStatus("");
+    return true;
+  }
+
   // ====== EVENTS ======
   btnAdd.addEventListener("click", () => openModal("add"));
 
-  btnClose.addEventListener("click", (e) => {
-    e.preventDefault();
-    closeModal();
-  });
-
-  btnCancel.addEventListener("click", (e) => {
-    e.preventDefault();
-    closeModal();
-  });
-
+  btnClose.addEventListener("click", (e) => { e.preventDefault(); closeModal(); });
+  btnCancel.addEventListener("click", (e) => { e.preventDefault(); closeModal(); });
   backdrop.addEventListener("click", closeModal);
 
   document.addEventListener("keydown", (e) => {
@@ -221,18 +256,43 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   searchBox.addEventListener("input", filterAndRender);
+  btnSave.addEventListener("click", saveArtist);
 
+  // ✅ Delete inside modal
+  btnDeleteInModal.addEventListener("click", async () => {
+    const id = parseInt(btnDeleteInModal.dataset.id || "0", 10);
+    const name = btnDeleteInModal.dataset.name || "this artist";
+    if (!id) return;
+
+    btnDeleteInModal.disabled = true;
+    const oldText = btnDeleteInModal.textContent;
+    btnDeleteInModal.textContent = "Deleting...";
+
+    try {
+      const ok = await deleteArtist(id, name);
+      if (ok) {
+        closeModal();
+        await loadArtists();
+      }
+    } finally {
+      btnDeleteInModal.disabled = false;
+      btnDeleteInModal.textContent = oldText;
+    }
+  });
+
+  // ✅ Single table click handler (Edit/Delete only)
   artistsTable.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
 
+    const action = btn.dataset.action;
     const id = parseInt(btn.dataset.id, 10);
-    // const artist = allArtists.find(a => a.ArtistId === id);
-    const artist = allArtists.find(a => a.id === id);
-    if (artist) openModal("edit", artist);
-  });
 
-  btnSave.addEventListener("click", saveArtist);
+    if (action === "edit") {
+      const artist = allArtists.find(a => a.id === id);
+      if (artist) openModal("edit", artist);
+    }
+  });
 
   // ====== START ======
   loadArtists();

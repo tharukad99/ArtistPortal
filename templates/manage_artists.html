@@ -5,37 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Manage Artists - ArtiSights</title>
 
-  <!-- Your existing base css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <!-- Page css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_artists.css') }}">
 </head>
+
 <body>
-
 <div class="layout">
-  <!-- Sidebar (simple) -->
 
+  <!-- Sidebar -->
+<aside class="sidebar">
 
+  <div class="sidebar-header">
+    <a class="brand" href="/admin/manage-each-artists">
+      <img src="{{ url_for('static', filename='img/logo.png') }}"
+           alt="ArtiSights Logo"
+           class="sidebar-logo">
+    </a>
+  </div>
 
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">ARTISIGHTS</div>
+  <!-- 👤 Admin Login -->
+  <div class="admin-block">
+    <div class="admin-user">
+      👤 Admin
     </div>
+  </div>
 
-    <nav class="nav1">
-      <a class="nav1-link" href="/artistslist">Artists List</a>
-      <a class="nav1-link active" href="/admin/manage-artists">Manage Artists</a>
-    </nav>
-  </aside>
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <a class="nav-link active" href="/admin/manage-artists">
+      Manage Artists
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-note">ArtiSights Admin</div>
+  </div>
+
+</aside>
+
+
+
+
+
+  
 
   <!-- Main -->
   <main class="main">
     <div class="page-header">
-      <h1 class="page-title">Manage Artists</h1>
+      <div>
+        <h1 class="page-title">Manage Artists</h1>
+      </div>
 
       <div class="page-actions">
         <input id="searchBox" class="search" type="text" placeholder="Search by stage name..." />
         <button id="btnAdd" type="button" class="btn-primary">+ Add Artist</button>
+        <a href="/logout" class="btn-logout" id="btnLogout">Logout</a>
       </div>
     </div>
 
@@ -55,7 +79,7 @@
               <th>Genre</th>
               <th style="width:110px;">Active</th>
               <th style="width:180px;">Created</th>
-              <th style="width:120px;">Actions</th>
+              <th style="width:140px;">Actions</th>
             </tr>
           </thead>
           <tbody id="artistsTbody"></tbody>
@@ -65,17 +89,15 @@
   </main>
 </div>
 
-<!-- Backdrop (hidden by default) -->
+<!-- Backdrop -->
 <div id="modalBackdrop" class="modal-backdrop" hidden></div>
 
-<!-- Modal (hidden by default) -->
+<!-- Modal -->
 <div id="artistModal" class="modal" hidden>
   <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 
     <div class="modal-header">
       <h2 id="modalTitle" class="modal-title">Add Artist</h2>
-
-      <!-- IMPORTANT: type="button" -->
       <button type="button" class="icon-btn" id="btnCloseModal" aria-label="Close">✕</button>
     </div>
 
@@ -127,10 +149,18 @@
       <div id="formError" class="form-error"></div>
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn-secondary" id="btnCancel">Cancel</button>
-      <button type="button" class="btn-primary" id="btnSave">Save</button>
+    <!-- ✅ UPDATED footer: left Delete (only in edit), right Cancel/Save -->
+    <div class="modal-footer modal-footer-split">
+      <button type="button" class="btn-danger-outline" id="btnDeleteInModal" hidden>
+        Delete Artist
+      </button>
+
+      <div class="modal-footer-right">
+        <button type="button" class="btn-secondary" id="btnCancel">Cancel</button>
+        <button type="button" class="btn-primary" id="btnSave">Save</button>
+      </div>
     </div>
+
   </div>
 </div>
 

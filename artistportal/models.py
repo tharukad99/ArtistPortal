@@ -257,7 +257,7 @@ class User1(db.Model, UserMixin):
     PasswordHash = db.Column(db.String(255), nullable=False)
     DisplayName = db.Column(db.String(150), nullable=False)
     # Email = db.Column(db.String(150), unique=True, nullable=False)
-    #IsAdmin = db.Column(db.Boolean, default=False)
+    IsAdmin = db.Column(db.Boolean, default=False)
     Role = db.Column(db.String(20), nullable=False, default="admin")  # "admin" or "guest"
     IsActive = db.Column(db.Boolean, default=True)
     DateCreated = db.Column(db.DateTime, default=datetime.utcnow)
@@ -277,3 +277,17 @@ class User1(db.Model, UserMixin):
 
     def is_admin(self) -> bool:
         return self.Role.lower() == "admin"
+    
+class User2(UserMixin):
+    def __init__(self, UserId, Username, PasswordHash, DisplayName, IsAdmin, IsActive, ArtistId, Role):
+        self.UserId = UserId
+        self.Username = Username
+        self.PasswordHash = PasswordHash
+        self.DisplayName = DisplayName
+        self.IsAdmin = IsAdmin
+        self.IsActive = IsActive
+        self.ArtistId = ArtistId
+        self.Role = Role
+
+    def get_id(self):
+        return str(self.UserId)

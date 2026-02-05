@@ -1,17 +1,20 @@
-{% extends "base.html" %}
-{% block page_title %}Home{% endblock %}
+{# =========================
+   homepageEdit.html 
+========================= #}
+{% extends "baseArtistmode.html" %}
+
+{% block page_title %}Profile{% endblock %}
 
 {% block content %}
 <input type="hidden" id="artist-id" value="{{ artist_id }}">
 
 <!-- Artist Bio -->
-<div class="card">
-  
-  <div class="card-top" style="display:flex;align-items:center;justify-content:space-between;">
+<div class="card hidden" id="card-profile">
+  <div class="card-top">
     <div class="card-title">Artist Profile</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button id="btnEditProfile" class="btn-primary" type="button">Update Details</button>
-      </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button id="btnEditProfile" class="btn-primary" type="button">Update Details</button>
+    </div>
   </div>
 
   <div class="artist-bio-row">
@@ -29,39 +32,42 @@
     </div>
 
     <div class="artist-bio-right" style="min-width:140px;display:flex;justify-content:flex-end;">
+      <!-- Optional image if you want later:
       <img id="bio-profile-img"
            src="https://via.placeholder.com/120x120?text=Artist"
            alt="Profile"
            style="width:120px;height:120px;object-fit:cover;border-radius:14px;border:1px solid #e5e5e5;">
+      -->
     </div>
   </div>
 </div>
 
 <!-- Latest Album -->
-<div class="card">
+<div class="card hidden" id="card-album">
   <div class="card-title">Latest Album</div>
   <div id="latest-album" class="album-box">Loading album...</div>
 </div>
 
 <!-- Photo Gallery -->
-<div class="card">
-<div class="card-top" style="display:flex;align-items:center;justify-content:space-between;">
-  <div class="card-title">Photo Gallery</div>
-  <button id="btnAddPhoto" class="btn-secondary" type="button">Add Photo</button>
-  <button id="btnDeletePhoto" class="btn-secondary" type="button">Delete Photo</button>
-</div>
+<div class="card hidden" id="card-photos">
+  <div class="card-top" style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="card-title">Photo Gallery</div>
+    <div class="photo-actions">
+      <button id="btnAddPhoto" type="button">➕ Add Photo</button>
+      <button id="btnDeletePhoto" type="button">🗑️ Delete Photo</button>
+    </div>
+  </div>
+
   <div id="photo-gallery" class="gallery-grid">Loading photos...</div>
 </div>
 
 <!-- Recent Activities -->
-<div class="card">
+<div class="card hidden" id="card-activities">
   <div class="card-title">Recent Activities</div>
   <div id="recent-activities"></div>
 </div>
 
-<!-- =======================
-     MODAL: Edit Profile
-======================= -->
+<!--  MODAL: Edit Profile -->
 <div id="profileModal" class="modal hidden">
   <div class="modal-card">
     <div class="modal-head">
@@ -102,74 +108,7 @@
   </div>
 </div>
 
-<!-- =======================
-     MODAL: Edit Activities
-======================= -->
-<!-- <div id="activitiesModal" class="modal hidden">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3 style="margin:0;">Update Activities</h3>
-      <button id="btnCloseActivitiesModal" class="icon-btn" type="button">✕</button>
-    </div>
-
-    <div class="form-grid">
-      <input type="hidden" id="ActId" value="0">
-
-      <label>Title *</label>
-      <input id="ActTitle" placeholder="e.g., New album release">
-
-      <label>Type</label>
-      <input id="ActType" placeholder="Album / Event / News">
-
-      <label>Date</label>
-      <input id="ActDate" type="date">
-
-      <label>Description</label>
-      <textarea id="ActDescription" rows="5" placeholder="Short description..."></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <div id="activitiesStatus" class="status"></div>
-      <div style="display:flex;gap:10px;">
-        <button id="btnCancelActivities" class="btn-secondary" type="button">Cancel</button>
-        <button id="btnSaveActivities" class="btn-primary" type="button">Save</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<!-- =======================
-     MODAL: Edit Social
-======================= -->
-<!-- <div id="socialModal" class="modal hidden">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3 style="margin:0;">Update Social Media</h3>
-      <button id="btnCloseSocialModal" class="icon-btn" type="button">✕</button>
-    </div>
-
-    <div class="form-grid">
-      <label>Platform *</label>
-      <input id="SocPlatform" placeholder="Instagram / YouTube / Facebook">
-
-      <label>Handle</label>
-      <input id="SocHandle" placeholder="@artist">
-
-      <label>URL</label>
-      <input id="SocUrl" placeholder="https://...">
-    </div>
-
-    <div class="modal-actions">
-      <div id="socialStatus" class="status"></div>
-      <div style="display:flex;gap:10px;">
-        <button id="btnCancelSocial" class="btn-secondary" type="button">Cancel</button>
-        <button id="btnSaveSocial" class="btn-primary" type="button">Save</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<!-- ==================== MODAL: Add Photo ==================== -->
+<!--  MODAL: Add Photo  -->
 <div id="photoModal" class="modal hidden">
   <div class="modal-card">
     <div class="modal-head">
@@ -194,16 +133,9 @@
     </div>
   </div>
 </div>
-<!-- ============================================================ -->
 
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/homepageEdit.js') }}"></script>
 {% endblock %}
-
-
-
-
-
-

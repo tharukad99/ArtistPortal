@@ -311,3 +311,79 @@ def api_update_artist(artist_id: int):
 
     db.session.commit()
     return jsonify({"success": True, "artistId": int(row["ArtistId"])})
+
+
+
+
+# from flask import jsonify
+# from sqlalchemy import text
+# from ..models import db
+
+# # ---------------------------------------------------------
+# # ADMIN: HARD delete artist
+# # DELETE /api/artists/<artist_id>
+# # ---------------------------------------------------------
+# @artists_bp.delete("/<int:artist_id>")
+# def api_delete_artist_hard(artist_id: int):
+#     try:
+#         row = db.session.execute(
+#             text("EXEC dbo.DeleteArtistHard @ArtistId=:artist_id"),
+#             {"artist_id": artist_id}
+#         ).mappings().first()
+
+#         # row => {Success: 1/0, Message: "..."}
+#         success = int(row["Success"]) if row and "Success" in row else 0
+#         message = row["Message"] if row and "Message" in row else "Delete failed"
+
+#         if not success:
+#             db.session.rollback()
+#             # If message indicates not found, return 404
+#             if "not found" in str(message).lower():
+#                 return jsonify({"success": False, "message": message}), 404
+#             return jsonify({"success": False, "message": message}), 400
+
+#         db.session.commit()
+#         return jsonify({"success": True, "artistId": artist_id, "message": message}), 200
+
+#     except Exception as ex:
+#         db.session.rollback()
+#         return jsonify({"success": False, "message": str(ex)}), 500
+
+
+
+from flask import Blueprint, jsonify, request
+from sqlalchemy import text
+from ..models import db
+
+# artists_bp = Blueprint("artists", __name__)
+
+# ... your other routes ...
+
+# ---------------------------------------------------------
+# ADMIN: HARD delete artist
+# DELETE /api/artists/<artist_id>
+# ---------------------------------------------------------
+@artists_bp.delete("delete/<int:artist_id>")
+def api_delete_artist_hard(artist_id: int):
+    try:
+        # If you don't have a stored procedure, do direct deletes like this:
+        db.session.execute(text("DELETE FROM ArtistPhotos WHERE ArtistId = :id"), {"id": artist_id})
+        db.session.execute(text("DELETE FROM ArtistSources WHERE ArtistId = :id"), {"id": artist_id})
+        db.session.execute(text("DELETE FROM Activities WHERE ArtistId = :id"), {"id": artist_id})
+        db.session.execute(text("DELETE FROM ArtistMetrics WHERE ArtistId = :id"), {"id": artist_id})
+
+
+        # TODO: add other child tables here if you have them (activities, socials, etc.)
+
+        result = db.session.execute(text("DELETE FROM Artists WHERE ArtistId = :id"), {"id": artist_id})
+
+        if result.rowcount == 0:
+            db.session.rollback()
+            return jsonify({"success": False, "message": "Artist not found"}), 404
+
+        db.session.commit()
+        return jsonify({"success": True, "artistId": artist_id, "message": "Artist deleted"}), 200
+
+    except Exception as ex:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(ex)}), 500

@@ -64,9 +64,49 @@ def create_app(config_object="config.Config"):
     # Import models so Flask-Login can load User
     from .models import User  # noqa: F401
 
+    # @login_manager.user_loader
+    # def load_user(user_id: str):
+    #     return User.query.get(int(user_id))
+
+    from sqlalchemy import text
+    from .models import User2
+
     @login_manager.user_loader
     def load_user(user_id: str):
-        return User.query.get(int(user_id))
+        sql = text("""
+            SELECT UserId, Username, PasswordHash, IsActive, ArtistId, DisplayName, IsAdmin, Role
+            FROM dbo.PortalUsers
+            WHERE UserId = :uid
+        """)
+        row = db.session.execute(sql, {"uid": int(user_id)}).fetchone()
+        if not row:
+            return None
+
+        return User2(
+            UserId=row.UserId,
+            Username=row.Username,
+            PasswordHash=row.PasswordHash,
+            DisplayName=row.DisplayName,
+            IsAdmin=row.IsAdmin,
+            IsActive=row.IsActive,
+            ArtistId=row.ArtistId,
+            Role=row.Role
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # ---- Register API blueprints (your existing ones) ----
     from .routes.artists import artists_bp
@@ -86,6 +126,16 @@ def create_app(config_object="config.Config"):
     # ---- Register Artist Profile blueprint (NEW) ----
     from .routes.artist_profile import artist_profile_bp
     app.register_blueprint(artist_profile_bp)
+
+
+
+
+    # ---- Register Artist Profile blueprint (NEW) ----
+    # from .routes.metrics import sources_bp
+    # app.register_blueprint(sources_bp)
+
+
+
 
     # Create tables (simple dev approach)
     # In production, use migrations (Flask-Migrate/Alembic).

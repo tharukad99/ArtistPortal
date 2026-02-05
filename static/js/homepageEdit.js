@@ -1,7 +1,12 @@
+/* =========================
+   homepageEdit.js 
+========================= */
+
 document.addEventListener("DOMContentLoaded", () => {
   const artistId = document.getElementById("artist-id")?.value;
   if (!artistId) return;
 
+  // Cards start hidden in HTML; we will show only if data exists.
   loadArtistSidebar(artistId);
   loadArtistBio(artistId);
   loadLatestAlbumFromActivities(artistId);
@@ -9,13 +14,32 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPhotoGallery(artistId);
 
   initProfileEdit(artistId);
-  //initActivitiesEdit(artistId);
-  // initSocialEdit(artistId);
 
   initPhotoInsert(artistId);
   initPhotoDeleteToggle(artistId);
 });
 
+/* =========================
+   Helpers
+========================= */
+function showCard(id) {
+  document.getElementById(id)?.classList.remove("hidden");
+}
+function hideCard(id) {
+  document.getElementById(id)?.classList.add("hidden");
+}
+
+function formatPrettyDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/[&<>"']/g, m => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[m]));
+}
 
 /* =========================
    EDIT MODE (Profile)
@@ -62,7 +86,7 @@ function initProfileEdit(artistId) {
     f.Country.value = artist.country ?? artist.Country ?? "";
     f.PrimaryGenre.value = artist.primaryGenre ?? artist.PrimaryGenre ?? "";
     f.ProfileImageUrl.value = artist.profileImageUrl ?? artist.ProfileImageUrl ?? "";
-    
+
     setStatus("");
   }
 
@@ -77,7 +101,6 @@ function initProfileEdit(artistId) {
       profileImageUrl: (f.ProfileImageUrl.value || "").trim(),
     };
 
-    
     if (!payload.stageName) { setStatus("Stage Name is required.", true); return; }
 
     setStatus("Saving...");
@@ -97,24 +120,27 @@ function initProfileEdit(artistId) {
 
     setStatus("Saved ✅");
 
-    // Update visible UI instantly
-    document.getElementById("bio-stage-name").textContent = payload.StageName || "Artist";
-    document.getElementById("bio-full-name").textContent = payload.FullName || "";
-    document.getElementById("bio-text").textContent = payload.Bio || "No biography available yet.";
+    // Update visible UI instantly (FIXED: use payload.stageName not payload.StageName)
+    document.getElementById("bio-stage-name").textContent = payload.stageName || "Artist";
+    document.getElementById("bio-full-name").textContent = payload.fullName || "";
+    document.getElementById("bio-text").textContent = payload.bio || "No biography available yet.";
 
     const websiteLink = document.getElementById("bio-website");
-    if (payload.WebsiteUrl) {
-      websiteLink.href = payload.WebsiteUrl;
+    if (payload.websiteUrl) {
+      websiteLink.href = payload.websiteUrl;
       websiteLink.style.display = "inline-flex";
     } else {
       websiteLink.style.display = "none";
     }
 
     const img = document.getElementById("bio-profile-img");
-    if (img) img.src = payload.ProfileImageUrl || "https://via.placeholder.com/120x120?text=Artist";
+    if (img) img.src = payload.profileImageUrl || "https://via.placeholder.com/120x120?text=Artist";
 
     const sidebarImg = document.getElementById("sidebar-artist-image");
-    if (sidebarImg) sidebarImg.src = payload.ProfileImageUrl || "https://via.placeholder.com/80x80?text=Artist";
+    if (sidebarImg) sidebarImg.src = payload.profileImageUrl || "https://via.placeholder.com/80x80?text=Artist";
+
+    // ensure profile card is visible after save
+    showCard("card-profile");
 
     setTimeout(closeModal, 250);
   }
@@ -126,179 +152,6 @@ function initProfileEdit(artistId) {
 
   modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 }
-
-/* =========================
-   EDIT MODE (Activities)
-========================= */
-// function initActivitiesEdit(artistId) {
-//   const btn = document.getElementById("btnEditActivities");
-//   const modal = document.getElementById("activitiesModal");
-//   if (!btn || !modal) return;
-
-//   const btnClose = document.getElementById("btnCloseActivitiesModal");
-//   const btnCancel = document.getElementById("btnCancelActivities");
-//   const btnSave = document.getElementById("btnSaveActivities");
-//   const statusEl = document.getElementById("activitiesStatus");
-
-//   const f = {
-//     ActId: document.getElementById("ActId"),
-//     Title: document.getElementById("ActTitle"),
-//     Type: document.getElementById("ActType"),
-//     Date: document.getElementById("ActDate"),
-//     Description: document.getElementById("ActDescription"),
-//   };
-
-//   const setStatus = (m, err=false) => {
-//     statusEl.textContent = m || "";
-//     statusEl.style.color = err ? "crimson" : "inherit";
-//   };
-
-//   const open = () => modal.classList.remove("hidden");
-//   const close = () => { modal.classList.add("hidden"); setStatus(""); };
-
-//   async function loadLatestActivityIntoForm() {
-//     setStatus("Loading...");
-//     const res = await fetch(`/api/activities/artist/${artistId}`);
-//     if (!res.ok) { setStatus("Failed to load activities", true); return; }
-
-//     const items = await res.json();
-//     if (!items || items.length === 0) {
-//       f.ActId.value = "0";
-//       f.Title.value = "";
-//       f.Type.value = "";
-//       f.Date.value = "";
-//       f.Description.value = "";
-//       setStatus("No activities yet. Add a new one.");
-//       return;
-//     }
-
-//     items.sort((a, b) => new Date(b.date) - new Date(a.date));
-//     const latest = items[0];
-
-//     f.ActId.value = String(latest.id ?? latest.activityId ?? 0);
-//     f.Title.value = latest.title || "";
-//     f.Type.value = latest.type || "";
-//     f.Date.value = (latest.date || "").slice(0, 10);
-//     f.Description.value = latest.description || "";
-
-//     setStatus("");
-//   }
-
-//   async function saveActivity() {
-//     const payload = {
-//       title: (f.Title.value || "").trim(),
-//       type: (f.Type.value || "").trim(),
-//       date: f.Date.value || null,
-//       description: (f.Description.value || "").trim(),
-//     };
-
-//     if (!payload.title) { setStatus("Title is required.", true); return; }
-
-//     setStatus("Saving...");
-
-//     const actId = parseInt(f.ActId.value || "0", 10);
-//     const url = actId > 0
-//       ? `/api/artists/${artistId}/activities/${actId}`
-//       : `/api/artists/${artistId}/activities`;
-
-//     const method = actId > 0 ? "PUT" : "POST";
-
-//     const res = await fetch(url, {
-//       method,
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(payload),
-//       credentials: "include"
-//     });
-
-//     const data = await res.json().catch(() => ({}));
-//     if (!res.ok) {
-//       setStatus(data.message || "Save failed.", true);
-//       return;
-//     }
-
-//     setStatus("Saved ✅");
-//     await loadRecentActivities(artistId);
-//     await loadLatestAlbumFromActivities(artistId);
-//     setTimeout(close, 250);
-//   }
-
-//   btn.addEventListener("click", async () => { open(); await loadLatestActivityIntoForm(); });
-//   btnClose?.addEventListener("click", close);
-//   btnCancel?.addEventListener("click", close);
-//   btnSave?.addEventListener("click", saveActivity);
-
-//   modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
-// }
-
-/* =========================
-   EDIT MODE (Social)
-========================= */
-// function initSocialEdit(artistId) {
-//   const btn = document.getElementById("btnEditSocial");
-//   const modal = document.getElementById("socialModal");
-//   if (!btn || !modal) return;
-
-//   const btnClose = document.getElementById("btnCloseSocialModal");
-//   const btnCancel = document.getElementById("btnCancelSocial");
-//   const btnSave = document.getElementById("btnSaveSocial");
-//   const statusEl = document.getElementById("socialStatus");
-
-//   const f = {
-//     Platform: document.getElementById("SocPlatform"),
-//     Handle: document.getElementById("SocHandle"),
-//     Url: document.getElementById("SocUrl"),
-//   };
-
-//   const setStatus = (m, err=false) => {
-//     statusEl.textContent = m || "";
-//     statusEl.style.color = err ? "crimson" : "inherit";
-//   };
-
-//   const open = () => modal.classList.remove("hidden");
-//   const close = () => { modal.classList.add("hidden"); setStatus(""); };
-
-//   async function loadSocialIntoForm() {
-//     f.Platform.value = "";
-//     f.Handle.value = "";
-//     f.Url.value = "";
-//     setStatus("Enter a platform and save (it will update or insert).");
-//   }
-
-//   async function saveSocial() {
-//     const payload = {
-//       platform: (f.Platform.value || "").trim(),
-//       handle: (f.Handle.value || "").trim(),
-//       url: (f.Url.value || "").trim(),
-//     };
-
-//     if (!payload.platform) { setStatus("Platform is required.", true); return; }
-
-//     setStatus("Saving...");
-
-//     const res = await fetch(`/api/artists/${artistId}/social`, {
-//       method: "PUT",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(payload),
-//       credentials: "include"
-//     });
-
-//     const data = await res.json().catch(() => ({}));
-//     if (!res.ok) {
-//       setStatus(data.message || "Save failed.", true);
-//       return;
-//     }
-
-//     setStatus("Saved ✅");
-//     setTimeout(close, 250);
-//   }
-
-//   btn.addEventListener("click", async () => { open(); await loadSocialIntoForm(); });
-//   btnClose?.addEventListener("click", close);
-//   btnCancel?.addEventListener("click", close);
-//   btnSave?.addEventListener("click", saveSocial);
-
-//   modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
-// }
 
 /* =========================
    EXISTING FUNCTIONS
@@ -319,6 +172,23 @@ function loadArtistBio(artistId) {
   fetch(`/api/artists/${artistId}`)
     .then(r => r.json())
     .then(artist => {
+      // Decide whether to show profile card
+      const hasProfileData =
+        !!(artist?.stageName?.trim()) ||
+        !!(artist?.fullName?.trim()) ||
+        !!(artist?.bio?.trim()) ||
+        !!(artist?.websiteUrl?.trim()) ||
+        !!(artist?.country?.trim()) ||
+        !!(artist?.primaryGenre?.trim()) ||
+        !!(artist?.profileImageUrl?.trim());
+
+      if (!hasProfileData) {
+        hideCard("card-profile");
+        return;
+      }
+
+      showCard("card-profile");
+
       document.getElementById("bio-stage-name").textContent = artist.stageName || "Artist";
       document.getElementById("bio-full-name").textContent = artist.fullName || "";
 
@@ -345,7 +215,10 @@ function loadArtistBio(artistId) {
         img.src = artist.profileImageUrl || "https://via.placeholder.com/120x120?text=Artist";
       }
     })
-    .catch(err => console.error("Bio load error:", err));
+    .catch(err => {
+      console.error("Bio load error:", err);
+      hideCard("card-profile");
+    });
 }
 
 function loadLatestAlbumFromActivities(artistId) {
@@ -356,7 +229,7 @@ function loadLatestAlbumFromActivities(artistId) {
       if (!box) return;
 
       if (!items || items.length === 0) {
-        box.textContent = "No album data found.";
+        hideCard("card-album");
         return;
       }
 
@@ -368,9 +241,11 @@ function loadLatestAlbumFromActivities(artistId) {
       );
 
       if (!album) {
-        box.textContent = "No album activity found yet.";
+        hideCard("card-album");
         return;
       }
+
+      showCard("card-album");
 
       box.innerHTML = `
         <div style="font-weight:700; font-size:15px;">${escapeHtml(album.title)}</div>
@@ -379,7 +254,10 @@ function loadLatestAlbumFromActivities(artistId) {
         </div>
       `;
     })
-    .catch(err => console.error("Latest album load error:", err));
+    .catch(err => {
+      console.error("Latest album load error:", err);
+      hideCard("card-album");
+    });
 }
 
 function loadRecentActivities(artistId) {
@@ -387,12 +265,16 @@ function loadRecentActivities(artistId) {
     .then(r => r.json())
     .then(items => {
       const container = document.getElementById("recent-activities");
+      if (!container) return;
+
       container.innerHTML = "";
 
       if (!items || items.length === 0) {
-        container.innerHTML = "<div class='empty'>No activities found.</div>";
+        hideCard("card-activities");
         return;
       }
+
+      showCard("card-activities");
 
       items.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -411,8 +293,15 @@ function loadRecentActivities(artistId) {
         container.appendChild(row);
       });
     })
-    .catch(err => console.error("Activities load error:", err));
+    .catch(err => {
+      console.error("Activities load error:", err);
+      hideCard("card-activities");
+    });
 }
+
+/* =============================
+   PHOTO Gallery Insert/Delete
+=============================== */
 
 let PHOTO_DELETE_MODE = false;
 
@@ -426,17 +315,17 @@ function loadPhotoGallery(artistId) {
       container.innerHTML = "";
 
       if (!images || images.length === 0) {
-        container.innerHTML = "<div class='empty'>No photos available.</div>";
+        hideCard("card-photos");
         return;
       }
 
+      showCard("card-photos");
+
       images.slice(0, 12).forEach(img => {
-        // Wrapper
         const wrap = document.createElement("div");
         wrap.className = "gallery-item-wrap";
         wrap.style.position = "relative";
 
-        // Clickable image link
         const a = document.createElement("a");
         a.href = img.url;
         a.target = "_blank";
@@ -450,7 +339,6 @@ function loadPhotoGallery(artistId) {
 
         a.appendChild(image);
 
-        // Delete button (only visible in delete mode)
         const delBtn = document.createElement("button");
         delBtn.type = "button";
         delBtn.className = "photo-del-btn";
@@ -462,8 +350,8 @@ function loadPhotoGallery(artistId) {
         delBtn.style.display = PHOTO_DELETE_MODE ? "inline-flex" : "none";
 
         delBtn.addEventListener("click", async (e) => {
-          e.preventDefault();   // stop opening the link
-          e.stopPropagation();  // stop bubbling
+          e.preventDefault();
+          e.stopPropagation();
 
           const ok = confirm("Delete this photo?");
           if (!ok) return;
@@ -477,26 +365,9 @@ function loadPhotoGallery(artistId) {
     })
     .catch(err => {
       console.error("Gallery load error:", err);
-      container.innerHTML = "<div class='empty'>Gallery endpoint not available yet.</div>";
+      hideCard("card-photos");
     });
 }
-
-function formatPrettyDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/[&<>"']/g, m => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-  }[m]));
-}
-
-
-/* =============================
-   PHOTO Gallery Insert/Delete
-=============================== */
 
 // =================Insert Photo===============//
 function initPhotoInsert(artistId) {
@@ -549,7 +420,6 @@ function initPhotoInsert(artistId) {
       credentials: "include"
     });
 
-
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       setStatus(data.message || "Save failed.", true);
@@ -557,7 +427,7 @@ function initPhotoInsert(artistId) {
     }
 
     setStatus("Saved ✅");
-    await loadPhotoGallery(artistId);   // refresh gallery
+    await loadPhotoGallery(artistId);
     setTimeout(close, 250);
   }
 
@@ -578,13 +448,11 @@ async function deletePhoto(artistId, photoId) {
     });
 
     const data = await res.json().catch(() => ({}));
-
     if (!res.ok) {
       alert(data.error || data.message || "Delete failed.");
       return;
     }
 
-    // refresh gallery
     await loadPhotoGallery(artistId);
   } catch (err) {
     console.error("Delete photo error:", err);
@@ -598,8 +466,7 @@ function initPhotoDeleteToggle(artistId) {
 
   btn.addEventListener("click", async () => {
     PHOTO_DELETE_MODE = !PHOTO_DELETE_MODE;
-
-    btn.textContent = PHOTO_DELETE_MODE ? "Done" : "Delete Photo";
+    btn.textContent = PHOTO_DELETE_MODE ? "Done" : "🗑️ Delete Photo";
     await loadPhotoGallery(artistId);
   });
 }

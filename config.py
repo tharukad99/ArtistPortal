@@ -27,3 +27,5 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = f"mssql+pyodbc:///?odbc_connect={params}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    SECRET_KEY = "change-this-to-a-random-long-string"

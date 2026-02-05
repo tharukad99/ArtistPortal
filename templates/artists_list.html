@@ -1,83 +1,415 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Artists</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        /* Centered container */
-        .artist-list-wrapper {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artisight</title>
 
-        .artist-page-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-        .artist-page-subtitle {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 20px;
-        }
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#0f172a;
+      --card:#0b1220cc;
+      --stroke:#ffffff1a;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#7c3aed;
+      --accent2:#22c55e;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+    }
 
-        /* Artist grid */
-        .artist-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-        }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(124,58,237,.35), transparent 55%),
+        radial-gradient(800px 500px at 80% 20%, rgba(34,197,94,.25), transparent 55%),
+        radial-gradient(900px 700px at 60% 100%, rgba(59,130,246,.22), transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      overflow-x:hidden;
+    }
 
-        .artist-card {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: #fff;
-            border-radius: 14px;
-            border: 1px solid #e5e7eb;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+    /* Subtle animated grain */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.18;
+    }
 
-        .artist-card:hover {
-            background: #f5f5f5;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        }
+    .wrap{
+      width:min(980px, 92vw);
+      padding: 26px;
+    }
 
-        .artist-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-        }
+    .shell{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      backdrop-filter: blur(14px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      position: relative;
+      overflow:hidden;
+    }
 
-        .artist-name {
-            font-size: 16px;
-            font-weight: 600;
-        }
-    </style>
+    .shell::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(600px 200px at 20% 0%, rgba(124,58,237,.28), transparent 60%),
+                  radial-gradient(600px 200px at 80% 0%, rgba(34,197,94,.20), transparent 60%);
+      pointer-events:none;
+      opacity:.65;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      position:relative;
+      z-index:1;
+      margin-bottom: 18px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .logo{
+      width:44px;height:44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(59,130,246,.85));
+      box-shadow: 0 10px 30px rgba(124,58,237,.25);
+      display:grid;
+      place-items:center;
+      border: 1px solid rgba(255,255,255,.18);
+      flex: 0 0 auto;
+    }
+
+    .logo svg{width:22px;height:22px; opacity:.95;}
+
+    .brand h1{
+      margin:0;
+      font-size: 26px;
+      letter-spacing: .3px;
+      line-height:1.05;
+    }
+    .brand .handle{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .intro{
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 520px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .meta{
+      text-align:right;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: var(--accent2);
+      box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    .tools{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      z-index:1;
+      margin: 18px 0 22px;
+    }
+
+    .search{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .search input::placeholder{ color: rgba(156,163,175,.8); }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(124,58,237,.92), rgba(59,130,246,.82));
+      box-shadow: 0 14px 35px rgba(59,130,246,.18);
+      border:1px solid rgba(255,255,255,.18);
+      font-weight: 650;
+      letter-spacing:.2px;
+      transition: transform .18s ease, filter .18s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .artist-card{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 14px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      min-height: 78px;
+    }
+    .artist-card:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    .artist-card-avatar{
+      width:52px;height:52px;border-radius: 16px;
+      object-fit: cover;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+      flex: 0 0 auto;
+      background: rgba(255,255,255,.06);
+    }
+
+    .artist-card-name{
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.2;
+      margin:0;
+    }
+    .artist-card-sub{
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .empty{
+      grid-column: 1 / -1;
+      padding: 18px;
+      border-radius: 18px;
+      border:1px dashed rgba(255,255,255,.18);
+      color: var(--muted);
+      text-align:center;
+      background: rgba(0,0,0,.18);
+    }
+
+
+    .meta{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    }
+
+    .login-btn{
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:14px;
+    font-weight:600;
+    font-size:13px;
+    color:var(--text);
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.25);
+    transition:.2s ease;
+    }
+
+    .login-btn:hover{
+    background: rgba(255,255,255,.08);
+    transform: translateY(-1px);
+    }
+
+
+    @media (max-width: 560px){
+      .top{flex-direction:column; align-items:flex-start;}
+      .meta{text-align:left;}
+      .btn{width:100%;}
+      .tools{flex-direction:column; align-items:stretch;}
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="shell">
 
-<div class="artist-list-wrapper">
+      <div class="top">
+        <div>
+          <div class="brand">
+            <div class="logo" aria-hidden="true">
+              <!-- tiny spark icon -->
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l1.6 6.1L20 10l-6.4 1.9L12 18l-1.6-6.1L4 10l6.4-1.9L12 2z"
+                      stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h1>Artisight</h1>
+              <div class="handle">@ARTISIGHT • Artist Intelligence</div>
+            </div>
+          </div>
 
-    <div class="artist-page-title">Artist List</div>
-    <div class="artist-page-subtitle">
-        Choose an artist to view their followers, streams and activities.
-    </div>
+          <p class="intro">
+            Select an artist to view followers, streams, activities, and profile insights — all in one clean dashboard.
+          </p>
+        </div>
 
-    <div id="artist-list" class="artist-list">
+        <div class="meta">
+            <a href="/login" class="login-btn">Login</a>
+          <!-- <div class="pill"><span class="dot"></span> System Online</div> -->
+        </div>
+      </div>
+
+      <div class="tools">
+        <div class="search">
+          <span style="opacity:.8">🔎</span>
+          <input id="artistSearch" type="text" placeholder="Search artists by name..." />
+        </div>
+        <button class="btn" id="btnRefresh">Refresh</button>
+      </div>
+
+      <div id="artist-list" class="grid">
         <!-- JS injects cards here -->
+      </div>
+
     </div>
+  </div>
 
-</div>
+  <script>
+    // Optional: search + refresh wrapper (works with your existing API)
+    let __allArtists = [];
 
-<script src="{{ url_for('static', filename='js/artists_list.js') }}"></script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadArtistList();
+
+      const search = document.getElementById("artistSearch");
+      const refresh = document.getElementById("btnRefresh");
+
+      if (search) {
+        search.addEventListener("input", () => renderArtists(filterArtists(search.value)));
+      }
+      if (refresh) {
+        refresh.addEventListener("click", () => loadArtistList());
+      }
+    });
+
+    function filterArtists(q){
+      q = (q || "").trim().toLowerCase();
+      if (!q) return __allArtists;
+      return __allArtists.filter(a => (a.stageName || "").toLowerCase().includes(q));
+    }
+
+    function renderArtists(artists){
+      const container = document.getElementById("artist-list");
+      container.innerHTML = "";
+
+      if (!artists || !artists.length){
+        container.innerHTML = `<div class="empty">No artists found. Try a different search.</div>`;
+        return;
+      }
+
+      artists.forEach(artist => {
+        const card = document.createElement("div");
+        card.className = "artist-card";
+        card.onclick = () => window.location.href = `/artist/${artist.id}`;
+
+        const img = document.createElement("img");
+        img.className = "artist-card-avatar";
+        img.src = artist.profileImageUrl || "https://via.placeholder.com/80x80?text=A";
+        img.alt = artist.stageName || "Artist";
+
+        const info = document.createElement("div");
+
+        const name = document.createElement("div");
+        name.className = "artist-card-name";
+        name.textContent = artist.stageName || "Unknown Artist";
+
+        const sub = document.createElement("div");
+        sub.className = "artist-card-sub";
+        sub.textContent = "Open dashboard →";
+
+        info.appendChild(name);
+        info.appendChild(sub);
+
+        card.appendChild(img);
+        card.appendChild(info);
+
+        container.appendChild(card);
+      });
+    }
+
+    function loadArtistList() {
+      fetch("/api/artists/")
+        .then(r => r.json())
+        .then(artists => {
+          __allArtists = artists || [];
+          renderArtists(__allArtists);
+        })
+        .catch(err => {
+          console.error("Error loading artist list:", err);
+          const container = document.getElementById("artist-list");
+          container.innerHTML = `<div class="empty">Failed to load artists. Check API connection.</div>`;
+        });
+    }
+  </script>
 
 </body>
 </html>
