@@ -152,7 +152,7 @@ async function loadMetricTypes() {
     sel.innerHTML =
       `<option value="">-- Select metric --</option>` +
       METRIC_TYPES.map(m =>
-        `<option value="${m.MetricTypeId}">${escapeHtml(m.GroupName)} • ${escapeHtml(m.Name)} (${escapeHtml(m.Code)})</option>`
+        `<option value="${m.MetricTypeId}">${escapeHtml(m.GroupName)} • ${escapeHtml(m.Name)}</option>`
       ).join("");
   }
 }
@@ -165,7 +165,7 @@ async function loadPlatforms() {
   if (sel) {
     sel.innerHTML =
       `<option value="">(none)</option>` +
-      PLATFORMS.map(p => `<option value="${p.PlatformId}">${escapeHtml(p.Name)} (${escapeHtml(p.Code)})</option>`).join("");
+      PLATFORMS.map(p => `<option value="${p.PlatformId}">${escapeHtml(p.Name)}</option>`).join("");
   }
 }
 
@@ -178,7 +178,7 @@ async function loadSourceTypes() {
     sel.innerHTML =
       `<option value="">-- Select source --</option>` +
       SOURCE_TYPES.map(s =>
-        `<option value="${s.sourceTypeId}">${escapeHtml(s.name)} (${escapeHtml(s.code)})</option>`
+        `<option value="${s.sourceTypeId}">${escapeHtml(s.name)}</option>`
       ).join("");
   }
 }
