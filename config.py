@@ -28,4 +28,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f"mssql+pyodbc:///?odbc_connect={params}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Meta API (Facebook/Instagram)
+    FB_APP_ID = "YOUR_FB_APP_ID"
+    FB_APP_SECRET = "YOUR_FB_APP_SECRET"
+    FB_VERSION = "v21.0"
+
     SECRET_KEY = "change-this-to-a-random-long-string"
