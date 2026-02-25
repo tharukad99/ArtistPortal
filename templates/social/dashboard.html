@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Analytics Dashboard - Artist Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/social.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-logo">ArtistPortal</div>
+            <nav>
+                <a href="/" class="nav-item">Main Dashboard</a>
+                <a href="/social/dashboard" class="nav-item active">Social Analytics</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div>
+                    <h1>Social Analytics</h1>
+                    {% if connected %}
+                    <p class="text-muted">Connected to <strong>{{ account.PageName }}</strong> {% if account.IgHandle
+                        %}and <strong>@{{ account.IgHandle }}</strong>{% endif %}</p>
+                    {% endif %}
+                </div>
+                <div class="header-actions">
+                    {% if connected %}
+                    <span id="last-sync" class="sync-status">Last Sync: {{ account.LastSync.strftime('%Y-%m-%d %H:%M')
+                        if account.LastSync else 'Never' }}</span>
+                    <button id="sync-now" class="btn btn-outline">Sync Now</button>
+                    <form action="{{ url_for('social.disconnect') }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Disconnect</button>
+                    </form>
+                    {% else %}
+                    <a href="{{ url_for('social.connect') }}" class="btn btn-primary">Connect Meta</a>
+                    {% endif %}
+                </div>
+            </header>
+
+            {% if connected %}
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="label">IG Followers</span>
+                    <h2 id="ig-followers-val">-</h2>
+                    <span class="trend" id="ig-followers-trend">...</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">FB Followers</span>
+                    <h2 id="fb-followers-val">-</h2>
+                    <span class="trend" id="fb-followers-trend">...</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">IG Reach (24h)</span>
+                    <h2 id="ig-reach-val">-</h2>
+                    <span class="trend" id="ig-reach-trend">...</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">FB Reach (24h)</span>
+                    <h2 id="fb-reach-val">-</h2>
+                    <span class="trend" id="fb-reach-trend">...</span>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h3>Followers Growth</h3>
+                    <canvas id="followersChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Reach & Impressions</h3>
+                    <canvas id="reachChart"></canvas>
+                </div>
+            </div>
+            {% else %}
+            <div class="connect-prompt">
+                <div class="prompt-content">
+                    <img src="https://img.icons8.com/social-productivity-line/128/000000/facebook-circled.png"
+                        alt="Meta">
+                    <h2>Unlock Social Analytics</h2>
+                    <p>Connect your Facebook Page and Instagram Business account to see real-time performance metrics
+                        and growth charts.</p>
+                    <a href="{{ url_for('social.connect') }}" class="btn btn-primary btn-lg">Connect Meta Now</a>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/social.js') }}"></script>
+</body>
+
+</html>

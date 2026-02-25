@@ -9,3 +9,8 @@ from .models import (
     Platform,
     ArtistMetric
 )
+from .social import (
+    SocialAccount,
+    SocialMetric,
+    SocialSyncLog
+)

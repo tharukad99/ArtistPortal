@@ -55,6 +55,10 @@ def create_app(config_object="config.Config"):
     from .routes.artist_profile import artist_profile_bp
     app.register_blueprint(artist_profile_bp)
 
+    # ---- Register Social Analytics blueprint (NEW) ----
+    from .routes.social import social_bp
+    app.register_blueprint(social_bp)
+
 
 
 

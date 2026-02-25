@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Meta Account - Artist Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/social.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container">
+        <header class="page-header">
+            <h1>Connect Your Social Media</h1>
+            <p>Select the Facebook Page and linked Instagram Business account you want to track.</p>
+        </header>
+
+        <div class="card-grid">
+            {% for acc in accounts %}
+            <div class="account-card">
+                <div class="card-body">
+                    <div class="platform-icons">
+                        <img src="https://img.icons8.com/color/48/000000/facebook-new.png" alt="FB">
+                        {% if acc.ig_id %}
+                        <img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="IG">
+                        {% endif %}
+                    </div>
+                    <h3>{{ acc.page_name }}</h3>
+                    {% if acc.ig_name %}
+                    <p class="subtitle">Instagram: @{{ acc.ig_name }}</p>
+                    {% else %}
+                    <p class="subtitle warning">No Instagram Business account found</p>
+                    {% endif %}
+                    
+                    <form action="{{ url_for('social.link_account') }}" method="POST">
+                        <input type="hidden" name="page_id" value="{{ acc.page_id }}">
+                        <input type="hidden" name="ig_id" value="{{ acc.ig_id or '' }}">
+                        <input type="hidden" name="page_name" value="{{ acc.page_name }}">
+                        <input type="hidden" name="ig_name" value="{{ acc.ig_name or '' }}">
+                        <input type="hidden" name="page_token" value="{{ acc.page_token }}">
+                        <button type="submit" class="btn btn-primary">Connect This Account</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No Facebook Pages found. Make sure you are an admin of a Page.</p>
+                <a href="{{ url_for('social.connect') }}" class="btn btn-secondary">Try Again</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
